@@ -1,0 +1,204 @@
+<!DOCTYPE html>
+<html lang="es"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><meta name="robots" content="noindex,nofollow">
+<title>Panel de accesos (pruebas) | Toolifylab</title>
+<style>
+:root{--tinta:#0E1B33;--suave:#4A5A78;--azul:#2447F5;--azul-o:#1A36C4;--senal:#FFD23F;--fondo:#F2F5F9;--linea:#D5DDEA;--ok:#0F6B43;--ok-bg:#E1F5EA;--av:#6B4600;--av-bg:#FFF1BD;--mal:#A3201A;--mal-bg:#FCE4E2;--info-bg:#E4EAFF}
+*{box-sizing:border-box}body{margin:0;font:16px/1.55 system-ui,-apple-system,'Segoe UI',Roboto,sans-serif;color:var(--tinta);background:var(--fondo)}
+[hidden]{display:none!important}.wrap{max-width:1120px;margin:0 auto;padding:0 18px}
+header{background:var(--tinta);color:#fff}header .wrap{display:flex;align-items:center;justify-content:space-between;gap:12px;min-height:62px}
+header h1{margin:0;font-size:1.1rem;font-weight:800;letter-spacing:-.01em}header .der{display:flex;align-items:center;gap:12px;font-size:.9rem;color:#C9D3E6}
+main{padding:26px 0 60px}
+.card{background:#fff;border:2px solid var(--tinta);border-radius:14px;padding:22px}
+.card h2{margin:0 0 4px;font-size:1.25rem;font-weight:800}.sub{margin:0 0 16px;color:var(--suave);font-size:.95rem}
+label{display:flex;flex-direction:column;gap:5px;font-weight:700;font-size:.9rem}label small{font-weight:500;color:var(--suave)}
+input,select,textarea{width:100%;min-height:44px;padding:9px 12px;border:2px solid var(--linea);border-radius:9px;font:600 1rem system-ui,sans-serif;color:var(--tinta);background:#fff}
+input:focus,select:focus,textarea:focus{outline:none;border-color:var(--azul);box-shadow:0 0 0 3px rgba(36,71,245,.2)}
+.form{display:grid;gap:14px}.dos{display:grid;grid-template-columns:1fr 1fr;gap:14px}
+.chk{flex-direction:row;align-items:center;gap:10px;font-weight:600}.chk input{width:20px;min-height:20px}
+button{font:700 1rem system-ui,sans-serif;cursor:pointer}
+.btn{min-height:46px;padding:10px 20px;border-radius:10px;border:2px solid var(--tinta);background:#fff;color:var(--tinta)}
+.btn.p{background:var(--azul);border-color:var(--azul);color:#fff}.btn.p:hover{background:var(--azul-o)}.btn:disabled{opacity:.6;cursor:wait}
+.btn.c{min-height:34px;padding:4px 10px;font-size:.85rem;border-radius:8px;border-width:1.5px}
+.msg{min-height:1.4em;font-weight:600;font-size:.95rem;margin:0}.msg.ok{color:var(--ok)}.msg.err{color:var(--mal)}.msg.info{color:var(--suave)}
+.rejilla{display:grid;grid-template-columns:360px 1fr;gap:22px;align-items:start}
+.cab{display:flex;flex-wrap:wrap;align-items:center;justify-content:space-between;gap:12px;margin-bottom:12px}.cab input{max-width:260px}
+.chips{display:flex;flex-wrap:wrap;gap:8px;margin-bottom:12px}.chip{padding:4px 11px;border-radius:99px;font-size:.85rem;font-weight:700}
+.tabla{overflow-x:auto}table{width:100%;border-collapse:collapse;min-width:620px}th{text-align:left;font-size:.8rem;color:var(--suave);padding:8px 10px;border-bottom:2px solid var(--tinta)}
+td{padding:10px;border-bottom:1px solid var(--linea);vertical-align:middle;font-size:.95rem}td small{display:block;color:var(--suave)}
+.b{display:inline-block;padding:3px 10px;border-radius:99px;font-size:.8rem;font-weight:800}
+.b.verde{background:var(--ok-bg);color:var(--ok)}.b.amarillo{background:var(--av-bg);color:var(--av)}.b.rojo{background:var(--mal-bg);color:var(--mal)}.b.azul{background:var(--info-bg);color:var(--azul-o)}
+.acc{display:flex;flex-wrap:wrap;gap:6px}
+.login{max-width:420px;margin:40px auto}
+@media (max-width:900px){.rejilla{grid-template-columns:1fr}.dos{grid-template-columns:1fr}}
+</style>
+<script src="firebase-config.js"></script>
+<script>
+(function(){ var C = window.FLUU_CONFIG; if (!C || !C.firebase || !C.firebase.apiKey || /PEGA/.test(C.firebase.apiKey) || !C.adminEmail || /PEGA/.test(C.adminEmail)) {
+  document.addEventListener('DOMContentLoaded', function(){ document.body.innerHTML = '<div style="max-width:520px;margin:60px auto;padding:24px;font:600 17px/1.5 system-ui,sans-serif;text-align:center"><h2>Falta configurar el entorno de pruebas</h2><p>Abre el archivo <b>firebase-config.js</b> y pega ahí los datos de tu proyecto de Firebase y tu correo de administrador.</p></div>'; }); } })();
+</script>
+<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-auth-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore-compat.js"></script>
+</head><body>
+<header><div class="wrap"><h1>Panel de accesos · Pruebas</h1><div class="der"><span id="quien"></span><button class="btn c" id="salir" hidden style="background:transparent;color:#fff;border-color:#fff">Salir</button></div></div></header>
+<main class="wrap">
+  <section class="card login" id="p-login" hidden>
+    <h2>Entrar al panel</h2><p class="sub">Usa el correo y la contraseña con los que entras a Fluu como administrador.</p>
+    <form class="form" id="f-login" novalidate>
+      <label>Correo<input id="l-correo" type="email" autocomplete="username"></label>
+      <label>Contraseña<input id="l-clave" type="password" autocomplete="current-password"></label>
+      <p class="msg err" id="l-err" role="alert"></p>
+      <button class="btn p" type="submit">Entrar</button>
+    </form>
+  </section>
+  <section class="card login" id="p-sinpermiso" hidden><h2>Sin permiso</h2><p class="sub">Esta cuenta no es la del administrador. Se cerró la sesión.</p></section>
+
+  <div class="rejilla" id="p-panel" hidden>
+    <section class="card">
+      <h2>Dar acceso</h2><p class="sub">Crea la cuenta del cliente si no existe y le activa su plan. Si ya tenía tiempo, el nuevo se suma.</p>
+      <div class="form">
+        <label>Correo del cliente<input id="f-correo" type="email" placeholder="cliente@correo.com" autocomplete="off"></label>
+        <label>Plan<select id="f-plan">
+          <option value="1">Básico (1 mes)</option><option value="3">Popular (3 meses)</option><option value="12">Mejor precio (12 meses)</option>
+          <option value="cortesia">Cortesía (12 meses, sin cobro)</option><option value="otro">Otro (tú eliges los meses)</option><option value="libre">Cuenta libre (sin vencimiento)</option></select></label>
+        <label id="f-otro" hidden>Cantidad de meses<input id="f-meses" type="number" min="1" max="60" value="1"></label>
+        <label>Contar desde <small>(opcional, si lo dejas vacío cuenta desde hoy)</small><input id="f-inicio" type="date"></label>
+        <label>Nota <small>(opcional)</small><input id="f-nota" placeholder="Ej.: pagó por Pago Móvil, ref. 123456" autocomplete="off"></label>
+        <label class="chk"><input type="checkbox" id="f-reenviar"> Enviar de nuevo el correo para crear contraseña</label>
+        <button class="btn p" type="button" id="f-dar">Dar acceso</button>
+        <p class="msg" id="f-msg" role="status" aria-live="polite"></p>
+      </div>
+    </section>
+    <section class="card">
+      <div class="cab"><div><h2>Clientes</h2><p class="sub" style="margin:0" id="conteo"></p></div><input id="buscar" type="search" placeholder="Buscar por correo"></div>
+      <div class="chips" id="chips"></div>
+      <div class="tabla"><table><thead><tr><th>Cliente</th><th>Estado</th><th>Vence</th><th>Acciones</th></tr></thead><tbody id="tabla"></tbody></table></div>
+      <p class="sub" id="vacio" hidden style="margin-top:14px">Todavía no hay clientes. Usa «Dar acceso».</p>
+    </section>
+  </div>
+</main>
+<script>
+const CFG = window.FLUU_CONFIG || {};
+const ADMIN_EMAIL = String(CFG.adminEmail || '').toLowerCase();
+const FLUU_URL = CFG.fluuUrl || '';
+const firebaseConfig = CFG.firebase || {};
+const $ = (id) => document.getElementById(id);
+firebase.initializeApp(firebaseConfig);
+const auth = firebase.auth(); auth.languageCode = 'es';
+const db = firebase.firestore(), TS = firebase.firestore.Timestamp, FV = firebase.firestore.FieldValue;
+const PLANES = {
+  '1': { label: 'Básico (1 mes)', meses: 1, origen: 'pago' }, '3': { label: 'Popular (3 meses)', meses: 3, origen: 'pago' }, '12': { label: 'Mejor precio (12 meses)', meses: 12, origen: 'pago' },
+  'cortesia': { label: 'Cortesía (12 meses)', meses: 12, origen: 'cortesia' }, 'otro': { label: 'Otro', meses: 0, origen: 'pago' }, 'libre': { label: 'Cuenta libre', libre: true, origen: 'libre' } };
+let DATOS = [], desuscribir = null;
+
+const esc = (s) => String(s).replace(/[&<>"']/g, (ch) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[ch]));
+const fmt = (ms) => new Date(ms).toLocaleDateString('es', { day: '2-digit', month: '2-digit', year: 'numeric' });
+function sumarMeses(f, n) { const d = new Date(f.getTime()), dia = d.getDate(); d.setMonth(d.getMonth() + n); if (d.getDate() !== dia) d.setDate(0); d.setHours(23, 59, 59, 0); return d; }
+function msg(t, tipo) { const m = $('f-msg'); m.textContent = t; m.className = 'msg ' + (tipo || ''); }
+function traducir(e) {
+  const c = (e && (e.code || '')) + '';
+  if (c.indexOf('permission-denied') >= 0) return 'Firebase no permitió guardar. Revisa que ya publicaste las reglas de la fase 1 con tu correo de administrador.';
+  if (c === 'auth/invalid-email') return 'El correo no es válido.';
+  if (c === 'auth/network-request-failed') return 'No hay conexión. Inténtalo de nuevo.';
+  return (e && e.message) || 'Ocurrió un error.';
+}
+async function crearCuenta(correo) {
+  const app2 = firebase.apps.find((a) => a.name === 'secundaria') || firebase.initializeApp(firebaseConfig, 'secundaria');
+  const a2 = app2.auth(), buf = new Uint8Array(18); crypto.getRandomValues(buf);
+  const clave = Array.from(buf, (b) => b.toString(36).padStart(2, '0')).join('') + 'Aa1!';
+  try { await a2.createUserWithEmailAndPassword(correo, clave); await a2.signOut(); return true; }
+  catch (e) { if (e.code === 'auth/email-already-in-use') return false; throw e; }
+}
+async function darAcceso() {
+  const correo = ($('f-correo').value || '').trim().toLowerCase(), planId = $('f-plan').value, P = PLANES[planId];
+  if (!/^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/.test(correo)) return msg('Escribe un correo válido.', 'err');
+  let meses = P.meses;
+  if (planId === 'otro') { meses = parseInt($('f-meses').value, 10); if (!(meses > 0 && meses <= 60)) return msg('Escribe cuántos meses (de 1 a 60).', 'err'); }
+  $('f-dar').disabled = true; msg('Procesando…', 'info');
+  try {
+    const ref = db.collection('suscripciones').doc(correo), snap = await ref.get(), ex = snap.exists ? snap.data() : null;
+    const creada = await crearCuenta(correo);
+    let datos, resumen;
+    if (P.libre) { datos = { libre: true, plan: P.label, origen: 'libre' }; resumen = 'Cuenta libre, sin vencimiento.'; }
+    else {
+      let base = new Date(); const inicio = $('f-inicio').value;
+      if (inicio) base = new Date(inicio + 'T00:00:00');
+      else if (ex && !ex.libre && ex.vence && ex.vence.toMillis() > Date.now()) base = new Date(ex.vence.toMillis());
+      const vence = sumarMeses(base, meses);
+      datos = { libre: false, vence: TS.fromDate(vence), plan: planId === 'otro' ? meses + ' meses' : P.label, origen: P.origen };
+      resumen = 'Acceso activo hasta el ' + fmt(vence.getTime()) + '.';
+    }
+    await ref.set(Object.assign({ correo, nota: $('f-nota').value.trim() || (ex && ex.nota) || '', actualizado: FV.serverTimestamp(), historial: FV.arrayUnion({ fecha: new Date().toISOString(), accion: datos.plan }) }, datos), { merge: true });
+    let enviado = false;
+    if (creada || $('f-reenviar').checked) { await auth.sendPasswordResetEmail(correo, { url: FLUU_URL }); enviado = true; }
+    msg(resumen + (creada ? ' Se creó su cuenta' : ' Ya tenía cuenta') + (enviado ? ' y se le envió un correo para crear su contraseña.' : '.'), 'ok');
+    $('f-correo').value = ''; $('f-nota').value = ''; $('f-inicio').value = ''; $('f-reenviar').checked = false;
+  } catch (e) { msg(traducir(e), 'err'); }
+  $('f-dar').disabled = false;
+}
+function estado(d) {
+  if (d.libre) return { t: 'Libre', c: 'azul', ms: 0 };
+  const ms = d.vence && d.vence.toMillis ? d.vence.toMillis() : 0, dias = Math.ceil((ms - Date.now()) / 86400000);
+  if (!ms || ms <= Date.now()) return { t: 'Vencido', c: 'rojo', ms };
+  return dias <= 7 ? { t: 'Por vencer', c: 'amarillo', ms, dias } : { t: 'Activo', c: 'verde', ms, dias };
+}
+function pintar() {
+  const q = ($('buscar').value || '').trim().toLowerCase();
+  const filas = DATOS.filter((d) => !q || d.id.indexOf(q) >= 0).sort((a, b) => (estado(a).ms || 9e15) - (estado(b).ms || 9e15));
+  const cuenta = { Activo: 0, 'Por vencer': 0, Vencido: 0, Libre: 0 }; DATOS.forEach((d) => { cuenta[estado(d).t]++; });
+  $('chips').innerHTML = [['verde', 'Activo'], ['amarillo', 'Por vencer'], ['rojo', 'Vencido'], ['azul', 'Libre']].map((x) => '<span class="chip b ' + x[0] + '">' + x[1] + ': ' + cuenta[x[1]] + '</span>').join('');
+  $('conteo').textContent = DATOS.length + (DATOS.length === 1 ? ' cliente' : ' clientes');
+  $('vacio').hidden = filas.length > 0;
+  $('tabla').innerHTML = filas.map((d) => {
+    const e = estado(d), c = esc(d.id);
+    const cuando = d.libre ? 'Sin vencimiento' : (e.ms ? fmt(e.ms) + (e.t === 'Vencido' ? '' : ' (en ' + e.dias + ' d)') : '—');
+    return '<tr><td><strong>' + c + '</strong><small>' + esc(d.plan || '') + (d.nota ? ' · ' + esc(d.nota) : '') + '</small></td><td><span class="b ' + e.c + '">' + e.t + '</span></td><td>' + cuando + '</td><td><div class="acc">' +
+      '<button class="btn c" data-a="m1" data-c="' + c + '">+1 mes</button><button class="btn c" data-a="m3" data-c="' + c + '">+3 meses</button><button class="btn c" data-a="m12" data-c="' + c + '">+12 meses</button>' +
+      '<button class="btn c" data-a="vencer" data-c="' + c + '">Vencer ahora</button><button class="btn c" data-a="libre" data-c="' + c + '">' + (d.libre ? 'Quitar libre' : 'Hacer libre') + '</button>' +
+      '<button class="btn c" data-a="correo" data-c="' + c + '">Reenviar correo</button><button class="btn c" data-a="borrar" data-c="' + c + '">Quitar</button></div></td></tr>';
+  }).join('');
+}
+async function accion(a, correo) {
+  const ref = db.collection('suscripciones').doc(correo), snap = await ref.get(); if (!snap.exists) return; const d = snap.data(), iso = new Date().toISOString();
+  try {
+    if (a === 'm1' || a === 'm3' || a === 'm12') {
+      const n = { m1: 1, m3: 3, m12: 12 }[a]; let base = new Date();
+      if (!d.libre && d.vence && d.vence.toMillis() > Date.now()) base = new Date(d.vence.toMillis());
+      const v = sumarMeses(base, n);
+      await ref.set({ libre: false, vence: TS.fromDate(v), plan: '+' + n + (n === 1 ? ' mes' : ' meses'), actualizado: FV.serverTimestamp(), historial: FV.arrayUnion({ fecha: iso, accion: 'Renovación +' + n }) }, { merge: true });
+      msg(correo + ' ahora vence el ' + fmt(v.getTime()) + '.', 'ok');
+    } else if (a === 'vencer') {
+      if (!confirm('¿Vencer ahora el plan de ' + correo + '? Perderá el acceso a Fluu de inmediato.')) return;
+      await ref.set({ libre: false, vence: TS.fromDate(new Date(Date.now() - 1000)), actualizado: FV.serverTimestamp(), historial: FV.arrayUnion({ fecha: iso, accion: 'Vencido a mano' }) }, { merge: true });
+      msg('El plan de ' + correo + ' quedó vencido.', 'ok');
+    } else if (a === 'libre') {
+      await ref.set({ libre: !d.libre, actualizado: FV.serverTimestamp(), historial: FV.arrayUnion({ fecha: iso, accion: d.libre ? 'Quitó libre' : 'Hizo libre' }) }, { merge: true });
+      msg(correo + (d.libre ? ' ya no es cuenta libre.' : ' ahora es cuenta libre.'), 'ok');
+    } else if (a === 'correo') { await auth.sendPasswordResetEmail(correo, { url: FLUU_URL }); msg('Correo enviado a ' + correo + '.', 'ok'); }
+    else if (a === 'borrar') { if (!confirm('¿Quitar a ' + correo + ' de la lista? Su cuenta de Fluu y sus datos no se borran.')) return; await ref.delete(); msg(correo + ' se quitó de la lista.', 'ok'); }
+  } catch (e) { msg(traducir(e), 'err'); }
+}
+$('tabla').addEventListener('click', (e) => { const b = e.target.closest('button[data-a]'); if (b) accion(b.dataset.a, b.dataset.c); });
+$('f-dar').addEventListener('click', darAcceso);
+$('f-plan').addEventListener('change', () => { $('f-otro').hidden = $('f-plan').value !== 'otro'; });
+$('buscar').addEventListener('input', pintar);
+$('salir').addEventListener('click', () => auth.signOut());
+$('f-login').addEventListener('submit', async (e) => {
+  e.preventDefault(); $('l-err').textContent = '';
+  try { await auth.signInWithEmailAndPassword($('l-correo').value.trim(), $('l-clave').value); }
+  catch (x) { $('l-err').textContent = /invalid|wrong|not-found|credential/.test(x.code || '') ? 'Correo o contraseña incorrectos.' : traducir(x); }
+});
+function pantalla(cual) { ['p-login', 'p-sinpermiso', 'p-panel'].forEach((id) => { $(id).hidden = id !== cual; }); $('salir').hidden = cual !== 'p-panel'; }
+let denegado = false;
+auth.onAuthStateChanged((u) => {
+  if (desuscribir) { desuscribir(); desuscribir = null; }
+  if (!u) {
+    $('quien').textContent = '';
+    if (denegado) { pantalla('p-sinpermiso'); setTimeout(() => { denegado = false; pantalla('p-login'); }, 3500); return; }
+    return pantalla('p-login');
+  }
+  if ((u.email || '').toLowerCase() !== ADMIN_EMAIL) { denegado = true; auth.signOut(); return; }
+  $('quien').textContent = u.email; pantalla('p-panel');
+  desuscribir = db.collection('suscripciones').onSnapshot((s) => { DATOS = s.docs.map((x) => Object.assign({ id: x.id }, x.data())); pintar(); }, (err) => msg(traducir(err), 'err'));
+});
+</script></body></html>
