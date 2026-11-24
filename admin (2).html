@@ -1,0 +1,261 @@
+<!DOCTYPE html>
+<html lang="es"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="theme-color" content="#0E1B33"><meta name="robots" content="noindex,nofollow">
+<title>Panel de accesos (pruebas) | Toolifylab</title>
+<style>
+:root{--tinta:#0E1B33;--suave:#4A5A78;--azul:#2447F5;--azul-o:#1A36C4;--senal:#FFD23F;--fondo:#F2F5F9;--linea:#D5DDEA;--ok:#0F6B43;--ok-bg:#E1F5EA;--av:#6B4600;--av-bg:#FFF1BD;--mal:#A3201A;--mal-bg:#FCE4E2;--info:#1A36C4;--info-bg:#E4EAFF;--pr:#5B2BB0;--pr-bg:#EFE6FF}
+*{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+html{-webkit-text-size-adjust:100%}
+body{margin:0;font:16px/1.5 system-ui,-apple-system,'Segoe UI',Roboto,sans-serif;color:var(--tinta);background:var(--fondo);min-height:100dvh}
+[hidden]{display:none!important}
+button{font:inherit;cursor:pointer;color:inherit}
+header.top{position:sticky;top:0;z-index:20;background:var(--tinta);color:#fff;padding:calc(10px + env(safe-area-inset-top)) 16px 10px;display:flex;align-items:center;justify-content:space-between;gap:10px;min-height:56px}
+.titulo{display:flex;flex-direction:column;min-width:0}.titulo b{font-size:1.05rem;font-weight:800}.titulo span{font-size:.78rem;color:#C9D3E6;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+#salir{min-height:40px;padding:6px 14px;border:1.5px solid #fff;border-radius:10px;background:transparent;color:#fff;font-weight:700}
+main{max-width:560px;margin:0 auto;padding:14px 14px calc(96px + env(safe-area-inset-bottom))}
+.card{background:#fff;border:2px solid var(--tinta);border-radius:16px;padding:18px}
+.card h2{margin:0 0 4px;font-size:1.25rem;font-weight:800}.sub{margin:0 0 14px;color:var(--suave);font-size:.95rem}
+label{display:flex;flex-direction:column;gap:6px;font-weight:700;font-size:.92rem}label small{font-weight:500;color:var(--suave)}
+input,select,textarea{width:100%;min-height:50px;padding:10px 13px;border:2px solid var(--linea);border-radius:12px;font:600 1rem system-ui,sans-serif;color:var(--tinta);background:#fff}
+input:focus,select:focus{outline:none;border-color:var(--azul);box-shadow:0 0 0 3px rgba(36,71,245,.2)}
+.form{display:grid;gap:14px}
+.chk{flex-direction:row;align-items:center;gap:12px;font-weight:600}.chk input{width:24px;min-height:24px}
+.btn{min-height:50px;padding:10px 18px;border-radius:12px;border:2px solid var(--tinta);background:#fff;font-weight:800}
+.btn.p{background:var(--azul);border-color:var(--azul);color:#fff}.btn.peligro{background:var(--mal);border-color:var(--mal);color:#fff}.btn:disabled{opacity:.6}
+.msg{min-height:1.4em;font-weight:700;font-size:.95rem;margin:0}.msg.ok{color:var(--ok)}.msg.err{color:var(--mal)}.msg.info{color:var(--suave)}
+.buscador input{background:#fff;margin-bottom:10px}
+.filtros{display:flex;gap:8px;overflow-x:auto;padding:2px 2px 12px;margin:0 -14px;padding-left:14px;padding-right:14px;scrollbar-width:none}.filtros::-webkit-scrollbar{display:none}
+.chip{flex:none;min-height:40px;padding:6px 14px;border-radius:99px;border:2px solid var(--linea);background:#fff;font-weight:700;font-size:.9rem;white-space:nowrap}
+.chip[aria-pressed="true"]{background:var(--tinta);border-color:var(--tinta);color:#fff}
+.tarjeta{display:block;width:100%;text-align:left;background:#fff;border:2px solid var(--linea);border-radius:16px;padding:14px 16px;margin-bottom:10px;min-height:76px}
+.tarjeta:active{border-color:var(--azul)}
+.fila1{display:flex;align-items:center;justify-content:space-between;gap:10px}.fila1 strong{font-size:1rem;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;min-width:0}
+.fila2{color:var(--suave);font-size:.88rem;margin-top:3px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.fila3{font-size:.9rem;margin-top:6px;font-weight:600}
+.b{display:inline-block;padding:3px 11px;border-radius:99px;font-size:.78rem;font-weight:800;flex:none}
+.b.verde{background:var(--ok-bg);color:var(--ok)}.b.amarillo{background:var(--av-bg);color:var(--av)}.b.rojo{background:var(--mal-bg);color:var(--mal)}.b.azul{background:var(--info-bg);color:var(--info)}.b.violeta{background:var(--pr-bg);color:var(--pr)}
+.vacio{text-align:center;color:var(--suave);padding:26px 10px}
+nav.tabs{position:fixed;left:0;right:0;bottom:0;z-index:30;background:#fff;border-top:2px solid var(--tinta);display:grid;grid-template-columns:1fr 1fr;padding-bottom:env(safe-area-inset-bottom)}
+nav.tabs button{min-height:60px;border:0;background:transparent;font-weight:800;color:var(--suave);display:flex;flex-direction:column;align-items:center;justify-content:center;gap:2px;font-size:.88rem}
+nav.tabs button span{font-size:1.25rem;line-height:1}nav.tabs button[aria-current="page"]{color:var(--azul);box-shadow:inset 0 3px 0 var(--azul)}
+#aviso{position:fixed;left:50%;top:calc(66px + env(safe-area-inset-top));transform:translateX(-50%) translateY(-20px);z-index:60;max-width:min(92vw,520px);padding:12px 18px;border-radius:12px;background:var(--tinta);color:#fff;font-weight:700;font-size:.95rem;text-align:center;opacity:0;pointer-events:none;transition:opacity .2s,transform .2s}
+#aviso.visible{opacity:1;transform:translateX(-50%) translateY(0)}#aviso.err{background:var(--mal)}#aviso.ok{background:var(--ok)}
+.hoja{position:fixed;inset:0;z-index:50;display:flex;align-items:flex-end;background:rgba(14,27,51,.55)}
+.hoja-panel{width:100%;max-width:560px;margin:0 auto;background:#fff;border-radius:22px 22px 0 0;padding:10px 18px calc(22px + env(safe-area-inset-bottom));max-height:90dvh;overflow:auto}
+.asa{width:44px;height:5px;border-radius:99px;background:var(--linea);margin:2px auto 12px}
+.hoja-panel h3{margin:0;font-size:1.1rem;word-break:break-all}.hoja-sub{margin:6px 0 14px;color:var(--suave);font-size:.92rem}
+.acciones{display:grid;grid-template-columns:1fr 1fr;gap:10px}.acciones .btn{min-height:54px}.acciones .ancho{grid-column:1/-1}
+.conf{font-weight:700;margin:6px 0 14px}.dosb{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.cerrar{width:100%;margin-top:12px;border-color:var(--linea)}
+.login{margin-top:30px}
+</style>
+<script src="firebase-config.js"></script>
+<script>
+(function(){ var C = window.FLUU_CONFIG; if (!C || !C.firebase || !C.firebase.apiKey || /PEGA/.test(C.firebase.apiKey) || !C.adminEmail || /PEGA/.test(C.adminEmail)) {
+  document.addEventListener('DOMContentLoaded', function(){ document.body.innerHTML = '<div style="max-width:520px;margin:60px auto;padding:24px;font:600 17px/1.5 system-ui,sans-serif;text-align:center"><h2>Falta configurar el entorno de pruebas</h2><p>Abre el archivo <b>firebase-config.js</b> y pega ahí los datos de tu proyecto de Firebase y tu correo de administrador.</p></div>'; }); } })();
+</script>
+<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-auth-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore-compat.js"></script>
+</head><body>
+<header class="top"><div class="titulo"><b>Panel de accesos</b><span id="quien"></span></div><button id="salir" hidden>Salir</button></header>
+<main>
+  <section class="card login" id="p-login" hidden>
+    <h2>Entrar al panel</h2><p class="sub">Usa el correo y la contraseña del administrador. Para probar Fluu con otra cuenta, usa una ventana privada u otro navegador.</p>
+    <form class="form" id="f-login" novalidate>
+      <label>Correo<input id="l-correo" type="email" autocomplete="username" inputmode="email"></label>
+      <label>Contraseña<input id="l-clave" type="password" autocomplete="current-password"></label>
+      <p class="msg err" id="l-err" role="alert"></p>
+      <button class="btn p" type="submit">Entrar</button>
+    </form>
+  </section>
+  <section class="card login" id="p-sinpermiso" hidden>
+    <h2>Esta cuenta no es la del administrador</h2>
+    <p class="sub">Ahora mismo hay una sesión abierta con <strong id="sp-correo"></strong>. Si abriste Fluu con otra cuenta en este mismo navegador, la sesión del panel se reemplazó.</p>
+    <button class="btn p" id="sp-salir" type="button" style="width:100%">Entrar con otra cuenta</button>
+    <p class="sub" style="margin:14px 0 0">Consejo: para probar Fluu con otra cuenta usa una ventana privada u otro navegador, así no se mezclan las sesiones.</p>
+  </section>
+
+  <section id="p-clientes" hidden>
+    <div class="buscador"><input id="buscar" type="search" placeholder="Buscar por correo" autocomplete="off"></div>
+    <div class="filtros" id="filtros" role="group" aria-label="Filtrar clientes"></div>
+    <div id="lista"></div>
+    <p class="vacio" id="vacio" hidden>No hay clientes con ese filtro.</p>
+  </section>
+
+  <section class="card" id="p-dar" hidden>
+    <h2>Dar acceso</h2><p class="sub">Crea la cuenta del cliente si no existe y le activa su plan. Si ya tenía tiempo pagado, el nuevo se suma. Si estaba en prueba gratis, el plan empieza hoy.</p>
+    <div class="form">
+      <label>Correo del cliente<input id="f-correo" type="email" placeholder="cliente@correo.com" autocomplete="off" inputmode="email"></label>
+      <label>Plan<select id="f-plan">
+        <option value="1">Básico (1 mes)</option><option value="3">Popular (3 meses)</option><option value="12">Mejor precio (12 meses)</option>
+        <option value="cortesia">Cortesía (12 meses, sin cobro)</option><option value="otro">Otro (tú eliges los meses)</option><option value="libre">Cuenta libre (sin vencimiento)</option></select></label>
+      <label id="f-otro" hidden>Cantidad de meses<input id="f-meses" type="number" min="1" max="60" value="1" inputmode="numeric"></label>
+      <label>Contar desde <small>(opcional; vacío = desde hoy)</small><input id="f-inicio" type="date"></label>
+      <label>Nota <small>(opcional)</small><input id="f-nota" placeholder="Ej.: transferencia, ref. 123456" autocomplete="off"></label>
+      <label class="chk"><input type="checkbox" id="f-reenviar"> Enviar de nuevo el correo para crear contraseña</label>
+      <button class="btn p" type="button" id="f-dar">Dar acceso</button>
+      <p class="msg" id="f-msg" role="status" aria-live="polite"></p>
+    </div>
+  </section>
+</main>
+<nav class="tabs" id="tabs" hidden>
+  <button type="button" data-v="clientes" aria-current="page"><span>👥</span>Clientes</button>
+  <button type="button" data-v="dar"><span>➕</span>Dar acceso</button>
+</nav>
+<div id="aviso" role="status" aria-live="polite"></div>
+<div class="hoja" id="hoja" hidden><div class="hoja-panel" id="hoja-panel"></div></div>
+
+<script>
+const CFG = window.FLUU_CONFIG || {};
+const ADMIN_EMAIL = String(CFG.adminEmail || '').toLowerCase();
+const FLUU_URL = CFG.fluuUrl || '';
+const firebaseConfig = CFG.firebase || {};
+const $ = (id) => document.getElementById(id);
+firebase.initializeApp(firebaseConfig);
+const auth = firebase.auth(); auth.languageCode = 'es';
+const db = firebase.firestore(), TS = firebase.firestore.Timestamp, FV = firebase.firestore.FieldValue;
+const PLANES = {
+  '1': { label: 'Básico (1 mes)', meses: 1, origen: 'pago' }, '3': { label: 'Popular (3 meses)', meses: 3, origen: 'pago' }, '12': { label: 'Mejor precio (12 meses)', meses: 12, origen: 'pago' },
+  'cortesia': { label: 'Cortesía (12 meses)', meses: 12, origen: 'cortesia' }, 'otro': { label: 'Otro', meses: 0, origen: 'pago' }, 'libre': { label: 'Cuenta libre', libre: true, origen: 'libre' } };
+let DATOS = [], desuscribir = null, filtro = 'todos', seleccion = null, pendiente = null;
+
+const esc = (s) => String(s).replace(/[&<>"']/g, (ch) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[ch]));
+const fmt = (ms) => new Date(ms).toLocaleDateString('es', { day: '2-digit', month: '2-digit', year: 'numeric' });
+function sumarMeses(f, n) { const d = new Date(f.getTime()), dia = d.getDate(); d.setMonth(d.getMonth() + n); if (d.getDate() !== dia) d.setDate(0); d.setHours(23, 59, 59, 0); return d; }
+function aviso(t, tipo) { const a = $('aviso'); a.textContent = t; a.className = 'visible ' + (tipo || ''); clearTimeout(aviso.h); aviso.h = setTimeout(() => { a.className = ''; }, 4200); }
+function msg(t, tipo) { const m = $('f-msg'); m.textContent = t; m.className = 'msg ' + (tipo || ''); }
+function traducir(e) {
+  const c = (e && (e.code || '')) + '';
+  if (c.indexOf('permission-denied') >= 0) return 'Firebase no permitió guardar. Revisa que ya publicaste las reglas con tu correo de administrador.';
+  if (c === 'auth/invalid-email') return 'El correo no es válido.';
+  if (c === 'auth/network-request-failed') return 'No hay conexión. Inténtalo de nuevo.';
+  return (e && e.message) || 'Ocurrió un error.';
+}
+// Desde cuándo se suma el tiempo: si tenía un plan pagado vigente, desde su vencimiento; si estaba en prueba, vencido o libre, desde hoy
+function baseDe(ex) { return (ex && !ex.libre && ex.origen !== 'prueba' && ex.vence && ex.vence.toMillis() > Date.now()) ? new Date(ex.vence.toMillis()) : new Date(); }
+async function crearCuenta(correo) {
+  const app2 = firebase.apps.find((a) => a.name === 'secundaria') || firebase.initializeApp(firebaseConfig, 'secundaria');
+  const a2 = app2.auth(), buf = new Uint8Array(18); crypto.getRandomValues(buf);
+  const clave = Array.from(buf, (b) => b.toString(36).padStart(2, '0')).join('') + 'Aa1!';
+  try { await a2.createUserWithEmailAndPassword(correo, clave); await a2.signOut(); return true; }
+  catch (e) { if (e.code === 'auth/email-already-in-use') return false; throw e; }
+}
+async function darAcceso() {
+  const correo = ($('f-correo').value || '').trim().toLowerCase(), planId = $('f-plan').value, P = PLANES[planId];
+  if (!/^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/.test(correo)) return msg('Escribe un correo válido.', 'err');
+  let meses = P.meses;
+  if (planId === 'otro') { meses = parseInt($('f-meses').value, 10); if (!(meses > 0 && meses <= 60)) return msg('Escribe cuántos meses (de 1 a 60).', 'err'); }
+  $('f-dar').disabled = true; msg('Procesando…', 'info');
+  try {
+    const ref = db.collection('suscripciones').doc(correo), snap = await ref.get(), ex = snap.exists ? snap.data() : null;
+    const creada = await crearCuenta(correo);
+    let datos, resumen;
+    if (P.libre) { datos = { libre: true, plan: P.label, origen: 'libre' }; resumen = 'Cuenta libre, sin vencimiento.'; }
+    else {
+      const inicio = $('f-inicio').value, base = inicio ? new Date(inicio + 'T00:00:00') : baseDe(ex), vence = sumarMeses(base, meses);
+      datos = { libre: false, vence: TS.fromDate(vence), plan: planId === 'otro' ? meses + ' meses' : P.label, origen: P.origen };
+      resumen = 'Acceso activo hasta el ' + fmt(vence.getTime()) + '.';
+    }
+    await ref.set(Object.assign({ correo, nota: $('f-nota').value.trim() || (ex && ex.nota) || '', actualizado: FV.serverTimestamp(), historial: FV.arrayUnion({ fecha: new Date().toISOString(), accion: datos.plan }) }, datos), { merge: true });
+    let enviado = false;
+    if (creada || $('f-reenviar').checked) { await auth.sendPasswordResetEmail(correo, { url: FLUU_URL }); enviado = true; }
+    msg(resumen + (creada ? ' Se creó su cuenta' : ' Ya tenía cuenta') + (enviado ? ' y se le envió un correo para crear su contraseña.' : '.'), 'ok');
+    aviso('Listo: ' + correo, 'ok');
+    $('f-correo').value = ''; $('f-nota').value = ''; $('f-inicio').value = ''; $('f-reenviar').checked = false;
+  } catch (e) { msg(traducir(e), 'err'); }
+  $('f-dar').disabled = false;
+}
+function estado(d) {
+  const prueba = d.origen === 'prueba';
+  if (d.libre) return { t: 'Libre', c: 'azul', ms: 0, prueba };
+  const ms = d.vence && d.vence.toMillis ? d.vence.toMillis() : 0, dias = Math.ceil((ms - Date.now()) / 86400000), horas = Math.ceil((ms - Date.now()) / 3600000);
+  if (!ms || ms <= Date.now()) return { t: prueba ? 'Prueba terminada' : 'Vencido', c: 'rojo', ms, prueba };
+  if (prueba) return { t: 'Prueba', c: 'violeta', ms, dias, horas, prueba };
+  return dias <= 7 ? { t: 'Por vencer', c: 'amarillo', ms, dias, prueba } : { t: 'Activo', c: 'verde', ms, dias, prueba };
+}
+const FILTROS = [['todos', 'Todos'], ['activos', 'Activos'], ['porvencer', 'Por vencer'], ['vencidos', 'Vencidos'], ['pruebas', 'Pruebas'], ['libres', 'Libres']];
+function coincide(d, f) {
+  const e = estado(d);
+  return f === 'todos' || (f === 'activos' && e.t === 'Activo') || (f === 'porvencer' && e.t === 'Por vencer') || (f === 'vencidos' && (e.t === 'Vencido' || e.t === 'Prueba terminada')) || (f === 'pruebas' && e.prueba) || (f === 'libres' && e.t === 'Libre');
+}
+function pintar() {
+  const q = ($('buscar').value || '').trim().toLowerCase();
+  $('filtros').innerHTML = FILTROS.map((x) => '<button type="button" class="chip" data-f="' + x[0] + '" aria-pressed="' + (filtro === x[0]) + '">' + x[1] + ' ' + DATOS.filter((d) => coincide(d, x[0])).length + '</button>').join('');
+  const filas = DATOS.filter((d) => coincide(d, filtro) && (!q || d.id.indexOf(q) >= 0)).sort((a, b) => (estado(a).ms || 9e15) - (estado(b).ms || 9e15));
+  $('vacio').hidden = filas.length > 0;
+  $('lista').innerHTML = filas.map((d) => {
+    const e = estado(d);
+    const cuando = d.libre ? 'Sin vencimiento' : (e.ms ? (e.t === 'Vencido' || e.t === 'Prueba terminada' ? 'Venció el ' + fmt(e.ms) : (e.prueba ? 'Prueba hasta el ' : 'Vence el ') + fmt(e.ms) + ' · ' + (e.dias > 1 ? 'en ' + e.dias + ' días' : 'en ' + e.horas + ' h')) : '—');
+    return '<button type="button" class="tarjeta" data-id="' + esc(d.id) + '"><div class="fila1"><strong>' + esc(d.id) + '</strong><span class="b ' + e.c + '">' + e.t + '</span></div><div class="fila2">' + esc(d.plan || '') + (d.nota ? ' · ' + esc(d.nota) : '') + '</div><div class="fila3">' + cuando + '</div></button>';
+  }).join('');
+}
+// ───── Menú de acciones (sube desde abajo) ─────
+function abrirHoja(id) { seleccion = id; pendiente = null; renderHoja(); $('hoja').hidden = false; }
+function cerrarHoja() { $('hoja').hidden = true; seleccion = null; pendiente = null; }
+function renderHoja() {
+  const d = DATOS.find((x) => x.id === seleccion); if (!d) return cerrarHoja();
+  const e = estado(d); let h = '<div class="asa"></div><h3>' + esc(d.id) + '</h3><p class="hoja-sub"><span class="b ' + e.c + '">' + e.t + '</span> ' + esc(d.plan || '') + '</p>';
+  if (pendiente) {
+    const t = pendiente === 'vencer' ? ['Perderá el acceso a Fluu de inmediato.', 'vencer ahora'] : ['Se quita de esta lista. Su cuenta de Fluu y sus datos no se borran.', 'quitar'];
+    h += '<p class="conf">¿Seguro? ' + t[0] + '</p><div class="dosb"><button class="btn peligro" id="c-si" type="button">Sí, ' + t[1] + '</button><button class="btn" id="c-no" type="button">Cancelar</button></div>';
+  } else {
+    h += '<div class="acciones"><button class="btn" data-a="m1" type="button">+1 mes</button><button class="btn" data-a="m3" type="button">+3 meses</button><button class="btn" data-a="m12" type="button">+12 meses</button><button class="btn" data-a="correo" type="button">Reenviar correo</button>' +
+      '<button class="btn ancho" data-a="libre" type="button">' + (d.libre ? 'Quitar cuenta libre' : 'Hacer cuenta libre') + '</button><button class="btn peligro" data-a="vencer" type="button">Vencer ahora</button><button class="btn peligro" data-a="borrar" type="button">Quitar de la lista</button></div><button class="btn cerrar" id="c-cerrar" type="button">Cerrar</button>';
+  }
+  $('hoja-panel').innerHTML = h;
+}
+async function accion(a, correo) {
+  const ref = db.collection('suscripciones').doc(correo), snap = await ref.get(); if (!snap.exists) return; const d = snap.data(), iso = new Date().toISOString();
+  try {
+    if (a === 'm1' || a === 'm3' || a === 'm12') {
+      const n = { m1: 1, m3: 3, m12: 12 }[a], v = sumarMeses(baseDe(d), n);
+      await ref.set({ libre: false, vence: TS.fromDate(v), origen: d.origen === 'prueba' ? 'pago' : (d.origen || 'pago'), plan: '+' + n + (n === 1 ? ' mes' : ' meses'), actualizado: FV.serverTimestamp(), historial: FV.arrayUnion({ fecha: iso, accion: 'Renovación +' + n }) }, { merge: true });
+      aviso(correo + ' vence el ' + fmt(v.getTime()), 'ok');
+    } else if (a === 'vencer') {
+      await ref.set({ libre: false, vence: TS.fromDate(new Date(Date.now() - 1000)), actualizado: FV.serverTimestamp(), historial: FV.arrayUnion({ fecha: iso, accion: 'Vencido a mano' }) }, { merge: true });
+      aviso('El plan de ' + correo + ' quedó vencido.', 'ok');
+    } else if (a === 'libre') {
+      await ref.set({ libre: !d.libre, actualizado: FV.serverTimestamp(), historial: FV.arrayUnion({ fecha: iso, accion: d.libre ? 'Quitó libre' : 'Hizo libre' }) }, { merge: true });
+      aviso(correo + (d.libre ? ' ya no es cuenta libre.' : ' ahora es cuenta libre.'), 'ok');
+    } else if (a === 'correo') { await auth.sendPasswordResetEmail(correo, { url: FLUU_URL }); aviso('Correo enviado a ' + correo, 'ok'); }
+    else if (a === 'borrar') { await ref.delete(); aviso(correo + ' se quitó de la lista.', 'ok'); }
+  } catch (e) { aviso(traducir(e), 'err'); }
+}
+$('hoja').addEventListener('click', (e) => {
+  if (e.target === $('hoja') || e.target.id === 'c-cerrar') return cerrarHoja();
+  if (e.target.id === 'c-no') { pendiente = null; return renderHoja(); }
+  if (e.target.id === 'c-si') { const a = pendiente, c = seleccion; cerrarHoja(); return accion(a, c); }
+  const b = e.target.closest('button[data-a]'); if (!b) return;
+  if (b.dataset.a === 'vencer' || b.dataset.a === 'borrar') { pendiente = b.dataset.a; return renderHoja(); }
+  const c = seleccion; cerrarHoja(); accion(b.dataset.a, c);
+});
+$('lista').addEventListener('click', (e) => { const t = e.target.closest('.tarjeta'); if (t) abrirHoja(t.dataset.id); });
+$('filtros').addEventListener('click', (e) => { const c = e.target.closest('.chip'); if (c) { filtro = c.dataset.f; pintar(); } });
+$('tabs').addEventListener('click', (e) => { const b = e.target.closest('button[data-v]'); if (b) vista(b.dataset.v); });
+function vista(v) { $('p-clientes').hidden = v !== 'clientes'; $('p-dar').hidden = v !== 'dar'; document.querySelectorAll('#tabs button').forEach((b) => { if (b.dataset.v === v) b.setAttribute('aria-current', 'page'); else b.removeAttribute('aria-current'); }); window.scrollTo(0, 0); }
+$('f-dar').addEventListener('click', darAcceso);
+$('f-plan').addEventListener('change', () => { $('f-otro').hidden = $('f-plan').value !== 'otro'; });
+$('buscar').addEventListener('input', pintar);
+$('salir').addEventListener('click', () => auth.signOut());
+$('sp-salir').addEventListener('click', () => auth.signOut());
+$('f-login').addEventListener('submit', async (e) => {
+  e.preventDefault(); $('l-err').textContent = '';
+  try { await auth.signInWithEmailAndPassword($('l-correo').value.trim(), $('l-clave').value); }
+  catch (x) { $('l-err').textContent = /invalid|wrong|not-found|credential/.test(x.code || '') ? 'Correo o contraseña incorrectos.' : traducir(x); }
+});
+function pantalla(cual) {
+  ['p-login', 'p-sinpermiso'].forEach((id) => { $(id).hidden = id !== cual; });
+  const panel = cual === 'p-panel'; $('tabs').hidden = !panel; $('salir').hidden = !panel;
+  if (!panel) { $('p-clientes').hidden = true; $('p-dar').hidden = true; cerrarHoja(); } else vista('clientes');
+}
+auth.onAuthStateChanged((u) => {
+  if (desuscribir) { desuscribir(); desuscribir = null; }
+  if (!u) { $('quien').textContent = ''; return pantalla('p-login'); }
+  // Si la sesión no es la del administrador NO se cierra: puede estar en uso en otra pestaña (por ejemplo, Fluu)
+  if ((u.email || '').toLowerCase() !== ADMIN_EMAIL) { $('quien').textContent = u.email || ''; $('sp-correo').textContent = u.email || ''; return pantalla('p-sinpermiso'); }
+  $('quien').textContent = u.email; pantalla('p-panel');
+  desuscribir = db.collection('suscripciones').onSnapshot((s) => { DATOS = s.docs.map((x) => Object.assign({ id: x.id }, x.data())); pintar(); if (!$('hoja').hidden && !pendiente) renderHoja(); }, (err) => aviso(traducir(err), 'err'));
+});
+</script></body></html>
