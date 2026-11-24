@@ -23,6 +23,7 @@ window.FLUU_CONFIG = {
   // 3) Dirección donde queda publicada esta app de pruebas
   //    (cambia TU-USUARIO por tu usuario de GitHub)
   fluuUrl: 'https://toolifylab.github.io/fluu-pruebas/',
+  workerUrl: 'https://toolifylab-pagos.toolifylab26.workers.dev/'
 
   // 4) Dirección de tu página de planes (botón "Ver planes")
   planesUrl: 'https://toolifylab.github.io/'
